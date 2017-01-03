@@ -1,4 +1,4 @@
-FROM willemvd/ubuntu-unprivileged-git-ssh:latest
+FROM willemvd/ubuntu-unprivileged-git-ssh:1.0.0
 MAINTAINER willemvd <willemvd@github>
 
 USER root
