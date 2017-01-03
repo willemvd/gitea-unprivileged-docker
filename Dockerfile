@@ -1,4 +1,5 @@
 FROM willemvd/ubuntu-unprivileged-git-ssh:latest
+MAINTAINER willemvd <willemvd@github>
 
 USER root
 
