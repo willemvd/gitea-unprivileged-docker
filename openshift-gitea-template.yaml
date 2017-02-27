@@ -67,8 +67,6 @@ objects:
           resources: {}
           terminationMessagePath: /dev/termination-log
           volumeMounts:
-          - mountPath: /etc/ssh/keys
-            name: gitea-ssh-keys
           - mountPath: /data
             name: gitea-data
           livenessProbe:
@@ -96,9 +94,6 @@ objects:
         securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: gitea-ssh-keys
-          persistentVolumeClaim:
-            claimName: gitea-ssh-keys
         - name: gitea-data
           persistentVolumeClaim:
             claimName: gitea-data
@@ -163,16 +158,6 @@ objects:
     resources:
       requests:
         storage: ${GITEA_DATA_VOLUME_CAPACITY}
-- kind: PersistentVolumeClaim
-  apiVersion: v1
-  metadata:
-    name: gitea-ssh-keys
-  spec:
-    accessModes:
-      - ReadWriteMany
-    resources:
-      requests:
-        storage: ${GITEA_SSH_KEYS_VOLUME_CAPACITY}
 parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
@@ -189,10 +174,6 @@ parameters:
 - description: 'Custom hostname for http service route.  Leave blank for default hostname, e.g.: <application-name>-<project>.<default-domain-suffix>'
   name: HOSTNAME
   value: ""
-- description: Volume space available for data, e.g. 512Mi, 2Gi
-  name: GITEA_SSH_KEYS_VOLUME_CAPACITY
-  required: true
-  value: 1Mi
 - description: Volume space available for Gitea repository data, e.g. 512Mi, 2Gi
   name: GITEA_DATA_VOLUME_CAPACITY
   required: true

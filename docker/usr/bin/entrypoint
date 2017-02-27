@@ -1,0 +1,12 @@
+#!/bin/sh
+sed -e "s/git:x:1000:/git:x:`id -u`:/g" /etc/passwd > /tmp/passwd && cat /tmp/passwd > /etc/passwd
+
+for FOLDER in /data/gitea/conf /data/gitea/log /data/git /data/ssh; do
+    mkdir -p ${FOLDER}
+done
+
+if [ $# -gt 0 ]; then
+    exec "$@"
+else
+    exec /bin/s6-svscan /etc/s6
+fi

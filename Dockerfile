@@ -1,18 +1,15 @@
-FROM willemvd/ubuntu-unprivileged-git-ssh:1.0.0
+FROM gitea/gitea:latest
 MAINTAINER willemvd <willemvd@github>
 
-USER root
+ENV HOME /data/git
 
-COPY ./docker /app/gitea/docker
+COPY docker /
 
-RUN /app/gitea/docker/init/10-setup-gitea.sh && rm -rf docker
+RUN rm -rf /etc/s6/syslogd && \
+  chmod g+w /etc/passwd /var/run && \
+  chmod -R g+w /etc/s6 && \
+  chown -R git:root /app
 
 USER git
 
-# persistent volume for the host ssh key and gitea data
-VOLUME ["/etc/ssh/keys", "/data"]
-
 EXPOSE 2222 3000
-
-# Use baseimage-docker's init system.
-ENTRYPOINT ["/sbin/my_init", "--"]
