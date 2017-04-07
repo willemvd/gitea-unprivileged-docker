@@ -24,10 +24,10 @@ objects:
     name: ${APPLICATION_NAME}
   spec:
     tags:
-    - from:
+    - name: ${DOCKER_IMAGE_VERSION}
+      from:
         kind: DockerImage
         name: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}
-      name: ${DOCKER_IMAGE_VERSION}
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -47,7 +47,7 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
-      type: Rolling
+      type: Recreate
     template:
       metadata:
         labels:
@@ -56,8 +56,8 @@ objects:
       spec:
         serviceAccountName: ${APPLICATION_NAME}
         containers:
-        - image: " "
-          imagePullPolicy: Always
+        - image: ' '
+          imagePullPolicy: IfNotPresent
           name: ${APPLICATION_NAME}
           ports:
           - containerPort: 2222
@@ -74,21 +74,11 @@ objects:
               path: /
               port: 3000
               scheme: HTTP
-            initialDelaySeconds: 3
+            initialDelaySeconds: 10
             timeoutSeconds: 1
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 3
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /
-              port: 3000
-              scheme: HTTP
-            initialDelaySeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         securityContext: {}
@@ -106,7 +96,8 @@ objects:
         - ${APPLICATION_NAME}
         from:
           kind: ImageStreamTag
-          name: ${APPLICATION_NAME}:latest
+          name: ${APPLICATION_NAME}:${DOCKER_IMAGE_VERSION}
+        lastTriggeredImage: ""
       type: ImageChange
 - kind: Service
   apiVersion: v1
@@ -166,7 +157,7 @@ parameters:
 - description: Docker image name
   name: DOCKER_IMAGE_NAME
   required: true
-  value: willemvd/gitea
+  value: willemvd/gitea-unprivileged-docker
 - description: Docker image version
   name: DOCKER_IMAGE_VERSION
   required: true
